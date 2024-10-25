@@ -1,0 +1,87 @@
+﻿getAuthToken()
+
+to getAuthToken
+	
+	put "https://sandbox.my.salesforce.com" into Server -- add correct SF server address here
+	put "abcdefg" into ClientID  -- add correct SF ClientID here
+	put "1234567" into ClientSecret  -- add correct SF ClientSecret here
+	put "username@email.com" into username  -- add correct SF Username here
+	put "MyPassword" into password  -- add correct SF Password here
+	
+	set endpoint to Server&"/services/oauth2/token?client_id="&ClientID&"&client_secret="&ClientSecret&"&username="&username&"&password="&password&"&response_type=token&grant_type=password"
+	
+	put AUTH(url:endpoint) into ResponseInformation
+	
+	if ResponseInformation.statusCode = "200" then
+		Logsuccess "Able to Access  Server, and grab a access token"
+	else
+		logerror "Unable to Access Server (Bad Username, Password, or Server O IP Whitelist issue)"
+		logwarning ResponseInformation
+		exit all
+	end if
+	
+	put ResponseInformation.responsebody into RB
+	
+	log JSONVALUE(RB).access_token
+	
+	return JSONVALUE(RB).access_token
+end getAuthToken
+
+to getSObject (object,id)
+	set url to "https://sandbox.my.salesforce.com" -- add correct SF object URL here
+	
+	if id is equal to ""
+		set endpoint to url&"/services/data/v58.0/sobjects/"&object -- add correct SF object URL suffix here
+		
+	else
+		set endpoint to url&"/services/data/v58.0/sobjects/"&object&"/"&id -- add correct SF object URL suffix here
+		
+	end if
+	
+	return JSONValue(SObjectQuery(url:endpoint,requestheaders:(Authorization:"Bearer"&&getAuthToken())).responsebody)
+end getSObject
+
+to updateObject (obj, id, updates)
+	set endpoint to "https://sandbox.my.salesforce.com/services/data/v58.0/sobjects/"&obj&"/"&id -- add correct SF object URL with suffix here
+	SOjectUpdate{
+		url:endpoint,
+		requestheaders:(Authorization:"Bearer"&&getAuthToken(),"Content-Type": "application/json"),
+		requestBody:JSONFORMAT(updates)
+	}
+	put API() into updateresponse
+	if updateresponse.responsebody = "" 
+		LogSuccess ID && "Updated"
+	else 
+		logwarning updateresponse.responsebody
+		log updateresponse
+	end if
+end updateObject
+
+to addObject (obj, items)
+	set endpoint to "https://sandbox.my.salesforce.com/services/data/v58.0/sobjects/"&obj&"/" -- add correct SF object URL with suffix here
+	SOjectAdd{
+		url:endpoint,
+		requestheaders:(Authorization:"Bearer"&&getAuthToken(),"Content-Type": "application/json"),
+		requestBody:JSONFORMAT(items)
+	}
+	//log API()
+	put API().responsebody into newObj
+	return JSONVALUE(newObj)
+	
+end addObject
+
+to deleteObject (obj, id)
+	set endpoint to "https://sandbox.my.salesforce.com/services/data/v58.0/sobjects/"&obj&"/"&id -- add correct SF object URL with suffix here
+	SOjectDelete{
+		url:endpoint,
+		requestheaders:(Authorization:"Bearer"&&getAuthToken(),"Content-Type": "application/json"),
+	}
+	put API() into updateresponse
+	if updateresponse.responsebody = "" 
+		LogSuccess ID && "Updated"
+	else 
+		logwarning updateresponse.responsebody
+		log updateresponse
+	end if
+	
+end deleteObject

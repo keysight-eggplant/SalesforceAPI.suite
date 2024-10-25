@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<statistics>
+ <script name="SF_APIs">
+  <LastStatus>Success</LastStatus>
+  <NumberOfRuns>26</NumberOfRuns>
+  <NumberOfFails>7</NumberOfFails>
+  <FirstRun>2023-08-31 09:48:23 -0400</FirstRun>
+  <LastRun>2023-09-18 13:56:37 -0400</LastRun>
+  <TotalTimeOnSuccess>23.513163</TotalTimeOnSuccess>
+ </script>
+ <script name="SF API Tests">
+  <LastStatus>Success</LastStatus>
+  <NumberOfRuns>8</NumberOfRuns>
+  <NumberOfFails>6</NumberOfFails>
+  <FirstRun>2023-08-31 11:29:25 -0400</FirstRun>
+  <LastRun>2023-08-31 12:35:11 -0400</LastRun>
+  <TotalTimeOnSuccess>22.474654</TotalTimeOnSuccess>
+ </script>
+</statistics>

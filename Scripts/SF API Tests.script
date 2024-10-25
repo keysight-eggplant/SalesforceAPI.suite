@@ -1,0 +1,27 @@
+﻿put "123456" into reqID -- add correct request ID here
+put "DTC_Requested_Application__c" into ObjType -- verify object type
+
+//Get Object 
+put SF_APIs.getSObject(ObjType, reqID) into myReq
+log myReq
+
+//Update Obect
+set myUpdate.Describe_Level_of_Access__c to myReq.Describe_Level_of_Access__c&"g"
+put SF_APIs.updateObject(ObjType, reqID, myUpdate)
+
+//Test that updates went through
+put SF_APIs.getSObject(ObjType, reqID) into myReq2
+assert myReq2.Describe_Level_of_Access__c equals myReq.Describe_Level_of_Access__c&"g"
+
+//Add new Account
+put SF_APIs.addObject("Account", (name:"testing API")) into newObj
+assert newObj.success with warning
+log "New Object is" && newObj.id
+
+put SF_APIs.getSObject("Account", newObj.id) into myReq
+log myReq
+
+//Delete new account
+put SF_APIs.deleteObject("Account", newObj.id)
+
+
